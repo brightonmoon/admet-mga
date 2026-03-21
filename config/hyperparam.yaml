@@ -1,0 +1,17 @@
+program: /home/doyamoon/MGA-main/experiment/Transfer_RGCN_deeppk.py
+project: deep_pk_fixed
+method: bayes
+metric:
+  name: best_val_score
+  goal: maximize
+parameters:
+  batch_size:
+    values: [256]
+  learning_rate:
+    min: 0.00001 
+    max: 0.0001 
+  classifier_hidden_feats:
+    values: [64, 128]
+  drop_out:
+    values: [0.1, 0.2]
+  

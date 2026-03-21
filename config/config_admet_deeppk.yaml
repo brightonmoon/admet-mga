@@ -1,0 +1,173 @@
+atom_data_field: "atom"
+bond_data_field: "etype"
+classification_metric_name: "roc_auc"
+regression_metric_name: "r2"
+num_epochs: 500
+patience: 50
+batch_size: 512
+mode: "higher"
+lr: 0.001
+weight_decay: 0.00001
+in_feats: 40
+rgcn_hidden_feats:
+  - 512
+  - 512
+rgcn_drop_out: 0.2
+loop: true
+classifier_hidden_feats: 512
+drop_out: 0.2
+task_name: "deep_pk_8192"
+select_task_list:
+  - 'pgp_substrate'
+  - 'pgp_inhibitor'
+  - 'ob'
+  - 'f20'
+  - 'hia' # Absorption
+  - 'bbb_logbb' # Distribution
+  - 't0.5'
+  - 'oct2' # Excretion
+  - 'oatp1b3'
+  - 'oatp1b1'
+  - 'cyp3a4_inhibitor'
+  - 'cyp2d6_inhibitor'
+  - 'cyp2c9_inhibitor'
+  - 'cyp2c19_inhibitor'
+  - 'cyp1a2_inhibitor'
+  - 'cyp3a4_substrate'
+  - 'cyp2d6_substrate'
+  - 'cyp2c9_substrate'
+  - 'cyp2c19_substrate'
+  - 'cyp1a2_substrate'
+  - 'bcrp' # Metabolism
+  - 'nr_ahr'
+  - 'nr_ar'
+  - 'nr_ar_lbd'
+  - 'nr_er'
+  - 'nr_er_lbd'
+  - 'nr_tr'
+  - 'nr_gr'
+  - 'nr_ppar_gamma'
+  - 'nr_aromatase'
+  - 'sr_are'
+  - 'sr_atad5'
+  - 'sr_hse'
+  - 'sr_mmp'
+  - 'sr_p53' # Tox21
+  - 'skin_sens'
+  - 'respiratory_tox'
+  - 'micronucleus_tox'
+  - 'herg'
+  - 'h_ht'
+  - 'eye_irritation'
+  - 'eye_corrosion'
+  - 'dili'
+  - 'crustacean'
+  - 'carcinogenicity'
+  - 'biodegradation'
+  - 'bee_tox'
+  - 'avian_tox'
+  - 'ames' # Toxicity
+  - 'skin_permeability'
+  - 'mdck'
+  - 'caco2_reg' # Absorption
+  - 'vd'
+  - 'ppb'
+  - 'fu'
+  - 'bbb_cns' # Distribution
+  - 'cl' # Excretion
+  - 'pkb'
+  - 'pka'
+  - 'logd'
+  - 'logp'
+  - 'logs'
+  - 'logvp'
+  - 'hydrationE'
+  - 'bp'
+  - 'mp' # General property
+  - 'rat_acute_reg'
+  - 'fdamdd_reg'
+  - 'fm_reg'
+  - 'rat_chronic'
+  - 'bioconcF'
+  - 'lc50dm'
+  - 'pyriformis_reg' # Toxicity
+select_task_index: []
+classification_list: []
+regression_list: []
+all_task_list:
+  - 'pgp_substrate'
+  - 'pgp_inhibitor'
+  - 'ob'
+  - 'f20'
+  - 'hia' # Absorption
+  - 'bbb_logbb' # Distribution
+  - 't0.5'
+  - 'oct2' # Excretion
+  - 'oatp1b3'
+  - 'oatp1b1'
+  - 'cyp3a4_inhibitor'
+  - 'cyp2d6_inhibitor'
+  - 'cyp2c9_inhibitor'
+  - 'cyp2c19_inhibitor'
+  - 'cyp1a2_inhibitor'
+  - 'cyp3a4_substrate'
+  - 'cyp2d6_substrate'
+  - 'cyp2c9_substrate'
+  - 'cyp2c19_substrate'
+  - 'cyp1a2_substrate'
+  - 'bcrp' # Metabolism
+  - 'nr_ahr'
+  - 'nr_ar'
+  - 'nr_ar_lbd'
+  - 'nr_er'
+  - 'nr_er_lbd'
+  - 'nr_tr'
+  - 'nr_gr'
+  - 'nr_ppar_gamma'
+  - 'nr_aromatase'
+  - 'sr_are'
+  - 'sr_atad5'
+  - 'sr_hse'
+  - 'sr_mmp'
+  - 'sr_p53' # Tox21
+  - 'skin_sens'
+  - 'respiratory_tox'
+  - 'micronucleus_tox'
+  - 'herg'
+  - 'h_ht'
+  - 'eye_irritation'
+  - 'eye_corrosion'
+  - 'dili'
+  - 'crustacean'
+  - 'carcinogenicity'
+  - 'biodegradation'
+  - 'bee_tox'
+  - 'avian_tox'
+  - 'ames' # Toxicity
+  - 'skin_permeability'
+  - 'mdck'
+  - 'caco2_reg' # Absorption
+  - 'vd'
+  - 'ppb'
+  - 'fu'
+  - 'bbb_cns' # Distribution
+  - 'cl' # Excretion
+  - 'pkb'
+  - 'pka'
+  - 'logd'
+  - 'logp'
+  - 'logs'
+  - 'logvp'
+  - 'hydrationE'
+  - 'bp'
+  - 'mp' # General property
+  - 'rat_acute_reg'
+  - 'fdamdd_reg'
+  - 'fm_reg'
+  - 'rat_chronic'
+  - 'bioconcF'
+  - 'lc50dm'
+  - 'pyriformis_reg' # Toxicity
+task_class: ""
+bin_path: "./data/deep_pk/Deep-PK_modified.bin"
+group_path: "./data/deep_pk/Deep-PK_modified_group.csv"

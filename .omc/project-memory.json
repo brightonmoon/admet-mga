@@ -1,0 +1,137 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1774090388291,
+  "projectRoot": "/home/doyamoon/admet/admet-mga",
+  "techStack": {
+    "languages": [
+      {
+        "name": "Python",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "pyproject.toml"
+        ]
+      }
+    ],
+    "frameworks": [],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": "pytest",
+    "lintCommand": "ruff check",
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "scripts",
+      "src",
+      "tests"
+    ],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "_legacy": {
+      "path": "_legacy",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1774090388286,
+      "keyFiles": []
+    },
+    "checkpoints": {
+      "path": "checkpoints",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1774090388287,
+      "keyFiles": []
+    },
+    "config": {
+      "path": "config",
+      "purpose": "Configuration files",
+      "fileCount": 5,
+      "lastAccessed": 1774090388287,
+      "keyFiles": [
+        "config_admet.yaml",
+        "config_admet_clas.yaml",
+        "config_admet_deeppk.yaml",
+        "hyperparam.yaml",
+        "model_config.json"
+      ]
+    },
+    "data": {
+      "path": "data",
+      "purpose": "Data files",
+      "fileCount": 1,
+      "lastAccessed": 1774090388288,
+      "keyFiles": [
+        "ADMET_Guideline.csv"
+      ]
+    },
+    "notebooks": {
+      "path": "notebooks",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1774090388288,
+      "keyFiles": []
+    },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 3,
+      "lastAccessed": 1774090388288,
+      "keyFiles": [
+        "inference.py",
+        "prepare_data.py",
+        "train.py"
+      ]
+    },
+    "serve": {
+      "path": "serve",
+      "purpose": null,
+      "fileCount": 4,
+      "lastAccessed": 1774090388289,
+      "keyFiles": [
+        "Dockerfile",
+        "app.py",
+        "docker-compose.yml",
+        "environment.yaml"
+      ]
+    },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 0,
+      "lastAccessed": 1774090388289,
+      "keyFiles": []
+    },
+    "tests": {
+      "path": "tests",
+      "purpose": "Test files",
+      "fileCount": 0,
+      "lastAccessed": 1774090388289,
+      "keyFiles": []
+    },
+    "notebooks/examples": {
+      "path": "notebooks/examples",
+      "purpose": "Example code",
+      "fileCount": 1,
+      "lastAccessed": 1774090388290,
+      "keyFiles": [
+        "inference.ipynb"
+      ]
+    }
+  },
+  "hotPaths": [],
+  "userDirectives": []
+}

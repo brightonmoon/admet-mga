@@ -1,0 +1,23 @@
+{
+    "models": {
+      "caco2": {
+        "model_path": "/home/doyamoon/MGA-main/model/Deep_PK/fixed/single_model/Transfer_'caco2_reg'_64_5.79860423883575e-05_128_early_stop.pth",
+        "model_params": {
+          "n_tasks": 1,
+          "classifier_hidden_feats": 128,
+          "dropout": 0.1
+        },
+        "task_list": ["caco2_reg"]
+      },
+      "absorption": {
+        "model_path": "/home/doyamoon/MGA-main/model/Deep_PK/fixed/Transfer_Absorption_64_0.0001_128_fixed_early_stop.pth",
+        "model_params": {
+          "n_tasks": 5,
+          "classifier_hidden_feats": 128,
+          "dropout": 0.1
+        },
+        "task_list": ["pgp_substrate", "pgp_inhibitor", "ob", "f20", "hia"]
+      }
+  }
+}
+  

@@ -1,0 +1,64 @@
+[project]
+name = "mga"
+version = "0.2.0"
+description = "Multi-task Graph Attention (MGA) framework for ADMET prediction"
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+
+# Core dependencies (학습 + 추론 공통)
+dependencies = [
+  # PyTorch ecosystem (CUDA 12.1)
+  "torch>=2.4.0,<2.5.0",
+  # DGL은 별도 설치 필요 (install-dgl.sh 또는 conda 사용)
+  # Scientific computing
+  "numpy>=1.26.4,<2.0",
+  "pandas>=2.2.3,<2.4",
+  "scipy>=1.14.1,<1.17",
+  # Chemistry & molecules
+  "rdkit>=2023.9.6",
+  # Visualization
+  "matplotlib>=3.10.0,<3.11",
+  # Utilities
+  "pyyaml>=6.0.0",
+  "pydantic>=2.0",
+  "tqdm>=4.66.0",
+]
+
+[project.optional-dependencies]
+# 학습 전용 의존성
+train = [
+  "torchvision>=0.19.0,<0.20.0",
+  "torchaudio>=2.4.0,<2.5.0",
+  "seaborn>=0.13.0",
+  "scikit-learn>=1.5.0",
+  "torchmetrics>=1.0.0",
+  "wandb>=0.23.1",
+  "nvitop>=1.6.1",
+  "pypdf>=6.5.0",
+  "optuna>=4.7.0",
+  "optuna-dashboard>=0.20.0",
+  "pytdc>=0.4.1",
+]
+# 서빙 전용 의존성 (Streamlit UI)
+serve = [
+  "streamlit",
+  "plotly",
+]
+# 전체 개발 환경
+dev = ["mga[train,serve]"]
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cu121", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+torchvision = [
+  { index = "pytorch-cu121", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+torchaudio = [
+  { index = "pytorch-cu121", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cu121"
+url = "https://download.pytorch.org/whl/cu121"
+explicit = true
