@@ -190,3 +190,6 @@ node_modules/
 .venv.backup/
 /data/
 /checkpoints/
+
+# Legacy Notebooks (Excluded for stats and weight)
+/notebooks/
