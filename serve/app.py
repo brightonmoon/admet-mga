@@ -7,7 +7,7 @@ from pathlib import Path
 import sys
 
 # monorepo 루트를 경로에 추가
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from mga.inference import ADMETPredictor
 from mga.inference.task_registry import get_display_name
