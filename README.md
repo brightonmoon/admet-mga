@@ -60,34 +60,31 @@ admet-mga/
 |------|------|
 | Python | 3.11 |
 | CUDA | 12.1 (GPU 사용 시) |
-| DGL | 별도 설치 필요 (아래 참조) |
+| DGL | `uv sync`로 자동 설치 가능 (또는 별도 설치) |
 
-### 1. 패키지 설치
+### 1. uv를 이용한 설치 (권장)
+
+`uv`는 속도가 빠르고 의존성 관리가 엄격하여 가장 권장되는 방식입니다. `pyproject.toml`에 DGL 전용 인덱스가 설정되어 있어 명령어 하나로 모든 환경이 구축됩니다.
 
 ```bash
-# 추론 전용 (core)
-pip install -e .
+# 전체 환경 구축 (DGL 포함)
+uv sync
 
-# 학습 환경 (wandb, optuna, pytdc 포함)
-pip install -e ".[train]"
-
-# Streamlit UI 포함
-pip install -e ".[serve]"
-
-# 전체 개발 환경
-pip install -e ".[dev]"
+# 특정 옵션 포함 설치
+uv sync --extra train --extra serve
 ```
 
-### 2. DGL 설치 (별도)
+### 2. Manual 설치 (pip/conda)
 
-DGL은 PyPI 기본 인덱스에서 설치할 수 없습니다. CUDA 버전에 맞는 방법을 사용하세요.
+`uv`를 사용하지 않는 환경에서 수동으로 설치하는 방법입니다. PyPI 기본 인덱스에는 CUDA 대응 DGL이 없으므로 주의가 필요합니다.
 
 ```bash
-# conda (권장)
-conda install -c dglteam/label/th24_cu121 dgl
+# DGL 수동 설치 (CUDA 12.1)
+# dgl==2.4.0+cu121 권장 (2.5.0은 S3 접근 문제 발생 가능)
+pip install dgl==2.4.0+cu121 -f https://data.dgl.ai/wheels/torch-2.4/cu121/repo.html
 
-# pip (CUDA 12.1)
-pip install dgl -f https://data.dgl.ai/wheels/torch-2.4/cu121/repo.html
+# 나머지 패키지 설치
+pip install -e .
 ```
 
 ### 3. Conda 환경 (서빙 전용)

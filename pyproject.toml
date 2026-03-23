@@ -9,7 +9,7 @@ requires-python = ">=3.11,<3.12"
 dependencies = [
   # PyTorch ecosystem (CUDA 12.1)
   "torch>=2.4.0,<2.5.0",
-  # DGL은 별도 설치 필요 (install-dgl.sh 또는 conda 사용)
+  "dgl==2.4.0+cu121",
   # Scientific computing
   "numpy>=1.26.4,<2.0",
   "pandas>=2.2.3,<2.4",
@@ -57,6 +57,9 @@ torchvision = [
 torchaudio = [
   { index = "pytorch-cu121", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
 ]
+
+[tool.uv]
+find-links = ["https://data.dgl.ai/wheels/torch-2.4/cu121/repo.html"]
 
 [[tool.uv.index]]
 name = "pytorch-cu121"
