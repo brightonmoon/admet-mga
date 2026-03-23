@@ -106,19 +106,15 @@ def return_result_supgraph(model, smiles: list, bg, atom_feats, bond_feats, task
     """
     result, atom_weight_list, node_feats = model(bg, atom_feats, bond_feats, norm=None)
 
-    img_list = []
-    for mol_index, atom_smiles in enumerate(smiles):
-        atm_list = []
-        for task_index, _ in enumerate(task_list):
-            bg.ndata["w"] = atom_weight_list[task_index]
-            bg.ndata["feats"] = node_feats
-            # dgl.unbatch은 task 루프 밖으로 호이스팅할 수 없음 (ndata["w"]가 태스크마다 바뀜)
-            # 대신 분자별로 1회만 unbatch 후 weight 인덱싱
-            unbatch_bg = dgl.unbatch(bg)
+    # task 루프 기준으로 unbatch: O(n_mols × n_tasks) → O(n_tasks) unbatch 호출
+    img_list = [[None] * len(task_list) for _ in range(len(smiles))]
+    for task_index, _ in enumerate(task_list):
+        bg.ndata["w"] = atom_weight_list[task_index]
+        bg.ndata["feats"] = node_feats
+        unbatch_bg = dgl.unbatch(bg)
+        for mol_index, atom_smiles in enumerate(smiles):
             one_atom_weight = unbatch_bg[mol_index].ndata["w"]
-            img_str = weight_visualize_string(atom_smiles, one_atom_weight)
-            atm_list.append(img_str)
-        img_list.append(atm_list)
+            img_list[mol_index][task_index] = weight_visualize_string(atom_smiles, one_atom_weight)
     return result, img_list
 
 

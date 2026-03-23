@@ -4,22 +4,20 @@
 
 from pathlib import Path
 
-import torch
-
 # ---------------------------------------------------------------------------
 # 모델 파일명 (checkpoints/ 디렉토리 기준 상대 경로)
 # ---------------------------------------------------------------------------
 MODEL_FILENAMES = {
-    "caco2":              "single_model/caco2_model.pth",
-    "absorption":         "absorption_model.pth",
-    "distribution":       "distribution_model.pth",
-    "metabolism":         "metabolism_model.pth",
-    "half_life":          "single_model/half_life_model.pth",
-    "excretion":          "excretion_model.pth",
-    "tox21":              "tox21_model.pth",
-    "toxicity":           "toxicity_model.pth",
-    "pka":                "single_model/pka_model.pth",
-    "general_properties": "general_properties_model.pth",
+    "caco2":              "inference/single_model/caco2_model.pth",
+    "absorption":         "inference/absorption_model.pth",
+    "distribution":       "inference/distribution_model.pth",
+    "metabolism":         "inference/metabolism_model.pth",
+    "half_life":          "inference/single_model/half_life_model.pth",
+    "excretion":          "inference/excretion_model.pth",
+    "tox21":              "inference/tox21_model.pth",
+    "toxicity":           "inference/toxicity_model.pth",
+    "pka":                "inference/single_model/pka_model.pth",
+    "general_properties": "inference/general_properties_model.pth",
 }
 
 
@@ -97,6 +95,37 @@ DISPLAY_NAMES: dict[str, str] = {
     "t0.5":               "T 1/2",
     "oct2":               "OCT2 inhibitor",
     "cl":                 "Clearance",
+    # Toxicity
+    "ames":               "Ames Mutagenicity",
+    "avian_tox":          "Avian Toxicity",
+    "bee_tox":            "Bee Toxicity",
+    "biodegradation":     "Biodegradation",
+    "carcinogenicity":    "Carcinogenicity",
+    "crustacean":         "Crustacean Toxicity",
+    "dili":               "DILI",
+    "eye_corrosion":      "Eye Corrosion",
+    "eye_irritation":     "Eye Irritation",
+    "h_ht":               "H-HT",
+    "herg":               "hERG",
+    "micronucleus_tox":   "Micronucleus",
+    "respiratory_tox":    "Respiratory Toxicity",
+    "skin_sens":          "Skin Sensitization",
+    # Tox21
+    "nr_ahr":             "NR-AhR",
+    "nr_ar":              "NR-AR",
+    "nr_ar_lbd":          "NR-AR-LBD",
+    "nr_aromatase":       "NR-Aromatase",
+    "nr_er":              "NR-ER",
+    "nr_er_lbd":          "NR-ER-LBD",
+    "nr_gr":              "NR-GR",
+    "nr_ppar_gamma":      "NR-PPAR-gamma",
+    "nr_tr":              "NR-TR",
+    "sr_are":             "SR-ARE",
+    "sr_atad5":           "SR-ATAD5",
+    "sr_hse":             "SR-HSE",
+    "sr_mmp":             "SR-MMP",
+    "sr_p53":             "SR-p53",
+    # General properties
     "pka":                "pKa",
     "pkb":                "pkb",
     "logd":               "logD",
@@ -141,6 +170,7 @@ _TOXICITY_CLS_COUNT = len([t for t in TASK_LISTS["toxicity"] if t not in TOXICIT
 
 def _apply_sigmoid(result, task, scale: float = 1.0):
     """sigmoid 적용 + 선택적 스케일링 (배치/단일 공통 로직)."""
+    import torch
     match task:
         case "absorption" | "metabolism" | "half_life" | "tox21":
             result = torch.sigmoid(result) * scale

@@ -172,7 +172,7 @@ class EarlyStopping:
         if self.pretrained_model is None:
             raise ValueError("pretrained_model path not set")
 
-        pretrained_path = Path("./models") / self.pretrained_model
+        pretrained_path = Path(self.pretrained_model)
         device = "cuda" if torch.cuda.is_available() else "cpu"
         checkpoint = torch.load(
             pretrained_path, map_location=device, weights_only=True
@@ -234,7 +234,7 @@ class EarlyStopping:
         if self.pretrained_model is None:
             raise ValueError("pretrained_model path not set")
 
-        pretrained_path = Path("./models") / self.pretrained_model
+        pretrained_path = Path(self.pretrained_model)
         device = "cuda" if torch.cuda.is_available() else "cpu"
         checkpoint = torch.load(
             pretrained_path, map_location=device, weights_only=True

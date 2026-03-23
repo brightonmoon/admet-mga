@@ -122,6 +122,6 @@ all_task_list:
   - "Half_Life_Obach"
   - "Clearance_Hepatocyte_AZ"
   - "Clearance_Microsome_AZ"
-task_class: ""
+task_class: "classification_regression"
 bin_path: "./data/admet_52.bin"
 group_path: "./data/admet_52_group.csv"

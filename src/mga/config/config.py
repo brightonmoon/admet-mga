@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import List, Optional, Literal
 
 import yaml
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class ModelConfig(BaseModel):
@@ -212,6 +212,9 @@ class TransferConfig(BaseModel):
 
 class MGAConfig(BaseModel):
     """Complete MGA configuration combining all sub-configs."""
+
+    # YAML 파일에서 불필요한 키(data_name, bin_path, group_path 등)가 전달될 수 있으므로 명시적으로 무시
+    model_config = ConfigDict(extra="ignore")
 
     model: ModelConfig = Field(default_factory=ModelConfig)
     training: TrainingConfig = Field(default_factory=TrainingConfig)

@@ -168,6 +168,6 @@ all_task_list:
   - 'bioconcF'
   - 'lc50dm'
   - 'pyriformis_reg' # Toxicity
-task_class: ""
+task_class: "classification_regression"
 bin_path: "./data/deep_pk/Deep-PK_modified.bin"
 group_path: "./data/deep_pk/Deep-PK_modified_group.csv"

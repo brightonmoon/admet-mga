@@ -30,7 +30,7 @@ from mga.utils.seed import set_random_seed
 # RDKit 등 외부 라이브러리의 알려진 경고만 억제
 warnings.filterwarnings("ignore", category=DeprecationWarning, module="rdkit")
 
-_DEFAULT_CHECKPOINTS = Path(__file__).resolve().parents[4] / "checkpoints"
+_DEFAULT_CHECKPOINTS = Path(__file__).resolve().parents[3] / "checkpoints"
 
 
 class ADMETPredictor:
