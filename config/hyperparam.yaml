@@ -1,4 +1,4 @@
-program: /home/doyamoon/MGA-main/experiment/Transfer_RGCN_deeppk.py
+program: scripts/train.py
 project: deep_pk_fixed
 method: bayes
 metric:

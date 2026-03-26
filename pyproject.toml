@@ -44,8 +44,10 @@ serve = [
   "streamlit",
   "plotly",
 ]
+# 테스트 의존성
+test = ["pytest>=8.0", "pytest-cov>=5.0"]
 # 전체 개발 환경
-dev = ["mga[train,serve]"]
+dev = ["mga[train,serve,test]"]
 
 [tool.uv.sources]
 torch = [
@@ -66,9 +68,23 @@ name = "pytorch-cu121"
 url = "https://download.pytorch.org/whl/cu121"
 explicit = true
 
+[project.scripts]
+mga-train = "mga.cli.train:main"
+mga-infer = "mga.cli.inference:main"
+mga-data = "mga.cli.prepare_data:main"
+mga-eval = "mga.cli.evaluate:main"
+
 [build-system]
 requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+markers = [
+    "slow: 5초 이상 소요되는 테스트 (deselect with '-m \"not slow\"')",
+    "gpu: GPU가 필요한 테스트",
+]
