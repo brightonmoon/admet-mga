@@ -18,6 +18,10 @@ import torch
 from dgl.data.graph_serialize import load_graphs, save_graphs
 from rdkit.Chem import MolFromSmiles
 
+from mga.utils.logging import get_logger
+
+logger = get_logger(__name__)
+
 from mga.data.features import atom_features, etype_features
 
 # Constant for missing label values (used for masking)
@@ -155,15 +159,15 @@ def build_dataset(
             dataset.append(molecule)
 
             if show_progress and (i + 1) % 100 == 0:
-                print(f"{i + 1}/{total} molecules processed")
+                logger.info(f"{i + 1}/{total} molecules processed")
 
         except (ValueError, RuntimeError) as e:
             if show_failures:
-                print(f"Failed to process {smiles}: {e}")
+                logger.debug(f"Failed to process {smiles}: {e}")
             failed_molecules.append(smiles)
 
     if show_failures and failed_molecules:
-        print(f"Failed molecules ({len(failed_molecules)}): {failed_molecules[:5]}...")
+        logger.warning(f"Failed molecules ({len(failed_molecules)}): {failed_molecules[:5]}...")
 
     if not dataset:
         raise ValueError("No valid molecules were processed from the input data")
@@ -234,7 +238,7 @@ def save_graph_dataset(
     split_index_pd.to_csv(group_path, index=None)
 
     save_graphs(save_path, graphs, graph_labels)
-    print(f"Saved {len(graphs)} graphs to {save_path}")
+    logger.info(f"Saved {len(graphs)} graphs to {save_path}")
 
 
 def load_graph_dataset(
@@ -267,7 +271,7 @@ def load_graph_dataset(
 
         num_tasks = labels.shape[1]
         if any(idx >= num_tasks for idx in select_task_index):
-            print(f"Warning: task index out of bounds, using [0]")
+            logger.warning("task index out of bounds, using [0]")
             select_task_index = [0]
 
         labels = labels[:, select_task_index]
@@ -307,6 +311,6 @@ def load_graph_dataset(
     test_set = build_split(test_index)
     n_tasks = labels.shape[1]
 
-    print(f"Loaded: train={len(train_set)}, val={len(val_set)}, test={len(test_set)}, tasks={n_tasks}")
+    logger.info(f"Loaded: train={len(train_set)}, val={len(val_set)}, test={len(test_set)}, tasks={n_tasks}")
 
     return train_set, val_set, test_set, n_tasks

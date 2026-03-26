@@ -78,6 +78,12 @@ class TrainingConfig(BaseModel):
     persistent_workers: bool = Field(default=False, description="Keep DataLoader workers alive between epochs (enable for large datasets)")
     prefetch_factor: int = Field(default=2, gt=0, description="Number of batches to prefetch per worker")
 
+    # Class imbalance correction
+    use_pos_weight: bool = Field(
+        default=False,
+        description="클래스 불균형 보정을 위한 pos_weight 사용 (분류 태스크에만 적용)"
+    )
+
     # wandb
     wandb: WandbConfig = Field(default_factory=WandbConfig)
 
@@ -134,6 +140,10 @@ class PathConfig(BaseModel):
     # Specific file paths
     train_data_path: Optional[Path] = Field(default=None, description="Training data path")
     pretrained_model_path: Optional[Path] = Field(default=None, description="Pretrained model path")
+
+    # Legacy flat-config paths (mapped from YAML keys bin_path / group_path)
+    bin_path: Optional[Path] = Field(default=None, description="Binary graph dataset path (legacy)")
+    group_path: Optional[Path] = Field(default=None, description="Group CSV path (legacy)")
 
     @field_validator("data_dir", "model_dir", "result_dir", "config_dir", mode="before")
     @classmethod
@@ -213,13 +223,14 @@ class TransferConfig(BaseModel):
 class MGAConfig(BaseModel):
     """Complete MGA configuration combining all sub-configs."""
 
-    # YAML 파일에서 불필요한 키(data_name, bin_path, group_path 등)가 전달될 수 있으므로 명시적으로 무시
+    # YAML 파일에서 불필요한 키(data_name 등)가 전달될 수 있으므로 명시적으로 무시
     model_config = ConfigDict(extra="ignore")
 
     model: ModelConfig = Field(default_factory=ModelConfig)
     training: TrainingConfig = Field(default_factory=TrainingConfig)
     task: TaskConfig = Field(default_factory=lambda: TaskConfig(task_name="mga-default"))
     paths: PathConfig = Field(default_factory=PathConfig)
+    transfer: Optional[TransferConfig] = Field(default=None, description="Transfer learning configuration")
 
     @classmethod
     def from_yaml(cls, path: str | Path) -> "MGAConfig":
@@ -246,6 +257,7 @@ class MGAConfig(BaseModel):
         training_data = {}
         task_data = {}
         path_data = {}
+        transfer_data = {}
 
         # Model config mappings
         model_keys = [
@@ -257,7 +269,7 @@ class MGAConfig(BaseModel):
         # Training config mappings
         training_keys = [
             "num_epochs", "batch_size", "lr", "weight_decay", "patience",
-            "device", "seed"
+            "device", "seed", "use_pos_weight",
         ]
 
         # Task config mappings
@@ -267,6 +279,12 @@ class MGAConfig(BaseModel):
             "regression_metric_name", "atom_data_field", "bond_data_field"
         ]
 
+        # Path config mappings (including legacy flat keys)
+        path_keys = [
+            "data_dir", "model_dir", "result_dir", "config_dir",
+            "train_data_path", "pretrained_model_path", "bin_path", "group_path",
+        ]
+
         for key, value in data.items():
             if key in model_keys:
                 model_data[key] = value
@@ -274,6 +292,8 @@ class MGAConfig(BaseModel):
                 training_data[key] = value
             elif key in task_keys:
                 task_data[key] = value
+            elif key in path_keys:
+                path_data[key] = value
             elif key == "model":
                 model_data.update(value)
             elif key == "training":
@@ -282,6 +302,8 @@ class MGAConfig(BaseModel):
                 task_data.update(value)
             elif key == "paths":
                 path_data.update(value)
+            elif key == "transfer":
+                transfer_data.update(value)
 
         # Ensure task_name exists
         if "task_name" not in task_data:
@@ -292,6 +314,7 @@ class MGAConfig(BaseModel):
             training=TrainingConfig(**training_data) if training_data else TrainingConfig(),
             task=TaskConfig(**task_data),
             paths=PathConfig(**path_data) if path_data else PathConfig(),
+            transfer=TransferConfig(**transfer_data) if transfer_data else None,
         )
 
     def to_yaml(self, path: str | Path) -> None:
