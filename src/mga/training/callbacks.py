@@ -8,11 +8,16 @@ This module provides callbacks for training control:
 from __future__ import annotations
 
 import os
+import warnings
 from pathlib import Path
 from typing import Literal, Optional
 
 import torch
 import torch.nn as nn
+
+from mga.utils.logging import get_logger
+
+logger = get_logger(__name__)
 
 
 class EarlyStopping:
@@ -88,7 +93,7 @@ class EarlyStopping:
             self.counter = 0
         else:
             self.counter += 1
-            print(f"EarlyStopping counter: {self.counter} / {self.patience}")
+            logger.debug(f"EarlyStopping counter: {self.counter} / {self.patience}")
             if self.counter >= self.patience:
                 self.early_stop = True
 
@@ -111,7 +116,7 @@ class EarlyStopping:
             self.counter = 0
         else:
             self.counter += 1
-            print(f"EarlyStopping counter: {self.counter} / {self.patience}")
+            logger.debug(f"EarlyStopping counter: {self.counter} / {self.patience}")
             if self.counter >= self.patience:
                 self.early_stop = True
 
@@ -139,11 +144,18 @@ class EarlyStopping:
         """
         Load only RGCN layers from pretrained model.
 
-        Useful for transfer learning where only encoder is pretrained.
+        .. deprecated::
+            Use :class:`mga.training.transfer.TransferLearningManager` instead.
 
         Args:
             model: Model to load weights into
         """
+        warnings.warn(
+            "load_pretrained_rgcn() is deprecated. "
+            "Use TransferLearningManager(strategy='selective_layer') instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         pretrained_parameters = [
             "rgcn_layer1.graph_conv_layer.h_bias",
             "rgcn_layer1.graph_conv_layer.loop_weight",
@@ -185,7 +197,7 @@ class EarlyStopping:
         }
 
         model.load_state_dict(pretrained_dict, strict=False)
-        print(f"Loaded {len(pretrained_dict)} pretrained RGCN parameters")
+        logger.info(f"Loaded {len(pretrained_dict)} pretrained RGCN parameters")
 
     def load_pretrained_with_attention(
         self,
@@ -195,10 +207,20 @@ class EarlyStopping:
         """
         Load RGCN layers and task-specific attention from pretrained model.
 
+        .. deprecated::
+            Use :class:`mga.training.transfer.TransferLearningManager` with
+            ``strategy='attention_transfer'`` instead.
+
         Args:
             model: Model to load weights into
             select_task_index: List of task indices to load attention for
         """
+        warnings.warn(
+            "load_pretrained_with_attention() is deprecated. "
+            "Use TransferLearningManager(strategy='attention_transfer') instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         pretrained_parameters = [
             "rgcn_layer1.graph_conv_layer.h_bias",
             "rgcn_layer1.graph_conv_layer.loop_weight",
@@ -249,4 +271,4 @@ class EarlyStopping:
 
         model_dict.update(pretrained_dict)
         model.load_state_dict(model_dict, strict=False)
-        print(f"Loaded {len(pretrained_dict)} pretrained parameters with attention")
+        logger.info(f"Loaded {len(pretrained_dict)} pretrained parameters with attention")

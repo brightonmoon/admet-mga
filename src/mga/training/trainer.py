@@ -21,6 +21,9 @@ from mga.config import MGAConfig
 from mga.metrics import Meter
 from mga.training.callbacks import EarlyStopping
 from mga.training.losses import compute_masked_loss, compute_pos_weight, get_loss_function
+from mga.utils.logging import get_logger
+
+logger = get_logger(__name__)
 
 
 class MGATrainer:
@@ -60,12 +63,36 @@ class MGATrainer:
         self.device = config.training.device
         self.model.to(self.device)
 
-        # Setup optimizer
-        self.optimizer = Adam(
-            model.parameters(),
-            lr=config.training.lr,
-            weight_decay=config.training.weight_decay,
-        )
+        # Transfer learning setup (opt-in: only when config.transfer is provided)
+        self.transfer_manager = None
+        if config.transfer and config.transfer.pretrained_model_path:
+            from mga.training.transfer import TransferLearningManager
+            self.transfer_manager = TransferLearningManager(
+                pretrained_path=config.transfer.pretrained_model_path,
+                strategy=config.transfer.strategy,
+                source_n_tasks=config.transfer.source_n_tasks,
+                freeze_layers=config.transfer.freeze_layers,
+                source_task_indices=config.transfer.source_task_indices,
+                encoder_lr_multiplier=config.transfer.encoder_lr_multiplier,
+                unfreeze_epoch=config.transfer.unfreeze_epoch,
+            )
+            loaded = self.transfer_manager.setup(model)
+            logger.info(f"Transfer learning: {config.transfer.strategy}, {loaded} params loaded")
+
+        # Setup optimizer (differential LR when transfer learning is active)
+        if self.transfer_manager is not None:
+            param_groups = self.transfer_manager.get_parameter_groups(
+                model,
+                base_lr=config.training.lr,
+                weight_decay=config.training.weight_decay,
+            )
+            self.optimizer = Adam(param_groups)
+        else:
+            self.optimizer = Adam(
+                model.parameters(),
+                lr=config.training.lr,
+                weight_decay=config.training.weight_decay,
+            )
 
         # Setup scheduler
         self.scheduler = ReduceLROnPlateau(
@@ -76,8 +103,19 @@ class MGATrainer:
             min_lr=config.training.min_lr,
         )
 
-        # Setup loss functions
-        self.loss_fn_classification = get_loss_function("classification")
+        # Setup loss functions (pos_weight for class imbalance correction)
+        pos_weight = None
+        if (
+            config.training.use_pos_weight
+            and config.task.task_class in ("classification", "classification_regression")
+        ):
+            n_clas = len(config.task.classification_list)
+            if n_clas > 0:
+                pos_weight = compute_pos_weight(train_loader.dataset, n_clas)
+                pos_weight = pos_weight.to(self.device)
+                logger.info(f"pos_weight computed for {n_clas} classification tasks")
+
+        self.loss_fn_classification = get_loss_function("classification", pos_weight=pos_weight)
         self.loss_fn_regression = get_loss_function("regression")
 
         # Setup early stopping
@@ -114,7 +152,7 @@ class MGATrainer:
                 notes=self.config.training.wandb.notes,
             )
         except ImportError:
-            print("wandb not installed, disabling logging")
+            logger.warning("wandb not installed, disabling logging")
             self.use_wandb = False
 
     def _log_wandb(self, metrics: Dict, step: int) -> None:
@@ -203,8 +241,10 @@ class MGATrainer:
             scores = meter_r.compute_metric(self.config.task.regression_metric_name)
 
         avg_score = np.mean(scores)
-        print(f"Epoch {epoch + 1}/{self.config.training.num_epochs}, "
-              f"Train Loss: {avg_loss:.4f}, Train Score: {avg_score:.4f}")
+        logger.info(
+            f"Epoch {epoch + 1}/{self.config.training.num_epochs} | "
+            f"Loss: {avg_loss:.4f} | Train Score: {avg_score:.4f}"
+        )
 
         # Clear meter state to free memory
         meter_c.reset()
@@ -346,7 +386,7 @@ class MGATrainer:
             history["val_scores"].append(val_scores)
             val_score = np.mean(val_scores)
 
-            print(f"Validation Score: {val_score:.4f}")
+            logger.info(f"Val Score: {val_score:.4f} (best: {self.stopper.best_score or val_score:.4f})")
 
             # Log to wandb
             log_dict = {
@@ -393,9 +433,20 @@ class MGATrainer:
             # Update scheduler
             self.scheduler.step(val_score)
 
+            # Gradual unfreezing (transfer learning)
+            if self.transfer_manager:
+                if self.transfer_manager.maybe_unfreeze(self.model, epoch):
+                    param_groups = self.transfer_manager.get_parameter_groups(
+                        self.model,
+                        base_lr=self.config.training.lr,
+                        weight_decay=self.config.training.weight_decay,
+                    )
+                    self.optimizer = Adam(param_groups)
+                    logger.info(f"Epoch {epoch + 1}: layers unfrozen, optimizer reset")
+
             # Early stopping
             if self.stopper.step(val_score, self.model):
-                print(f"Early stopping at epoch {epoch + 1}")
+                logger.info(f"Early stopping at epoch {epoch + 1}")
                 break
 
         # Load best model
@@ -406,7 +457,7 @@ class MGATrainer:
             test_all_metrics = self.evaluate(self.test_loader, return_all_metrics=True)
             test_scores = test_all_metrics["primary_scores"]
             history["test_scores"] = test_scores
-            print(f"Test Score: {np.mean(test_scores):.4f}")
+            logger.info(f"Test Score: {np.mean(test_scores):.4f}")
 
             if self.use_wandb:
                 test_log = {"test_score": float(np.mean(test_scores))}

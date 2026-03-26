@@ -16,6 +16,10 @@ from typing import Dict, List, Optional, Tuple
 import torch
 import torch.nn as nn
 
+from mga.utils.logging import get_logger
+
+logger = get_logger(__name__)
+
 
 class TransferLearningManager:
     """
@@ -115,7 +119,7 @@ class TransferLearningManager:
             Number of parameters loaded from pretrained model
         """
         if self.pretrained_path is None:
-            print("No pretrained model path specified, skipping weight loading")
+            logger.warning("No pretrained model path specified, skipping weight loading")
             return 0
 
         if self.strategy == "full_finetune":
@@ -187,7 +191,7 @@ class TransferLearningManager:
             }
 
         model.load_state_dict(loaded_dict, strict=False)
-        print(f"Loaded {len(loaded_dict)} pretrained encoder parameters")
+        logger.info(f"Loaded {len(loaded_dict)} pretrained encoder parameters")
 
         return len(loaded_dict)
 
@@ -234,7 +238,7 @@ class TransferLearningManager:
 
         if attention_dict:
             model.load_state_dict(attention_dict, strict=False)
-            print(f"Loaded {len(attention_dict)} attention parameters from source tasks {source_task_indices}")
+            logger.info(f"Loaded {len(attention_dict)} attention parameters from source tasks {source_task_indices}")
 
         return loaded_count + len(attention_dict)
 
@@ -252,7 +256,7 @@ class TransferLearningManager:
                 self._frozen_params.append(name)
                 frozen_count += 1
 
-        print(f"Frozen {frozen_count} encoder parameters")
+        logger.info(f"Frozen {frozen_count} encoder parameters")
 
     def freeze_encoder_layers(
         self,
@@ -275,7 +279,7 @@ class TransferLearningManager:
                     frozen_count += 1
                     break
 
-        print(f"Frozen {frozen_count} parameters in layers {layer_indices}")
+        logger.info(f"Frozen {frozen_count} parameters in layers {layer_indices}")
 
     def unfreeze_all(self, model: nn.Module) -> None:
         """
@@ -291,7 +295,7 @@ class TransferLearningManager:
                 unfrozen_count += 1
 
         self._frozen_params.clear()
-        print(f"Unfrozen {unfrozen_count} parameters")
+        logger.info(f"Unfrozen {unfrozen_count} parameters")
 
     def maybe_unfreeze(self, model: nn.Module, current_epoch: int) -> bool:
         """
@@ -353,7 +357,7 @@ class TransferLearningManager:
                 "weight_decay": weight_decay,
                 "name": "encoder",
             })
-            print(f"Encoder params: {len(encoder_params)}, lr={encoder_lr:.2e}")
+            logger.info(f"Encoder params: {len(encoder_params)}, lr={encoder_lr:.2e}")
 
         if head_params:
             param_groups.append({
@@ -362,7 +366,7 @@ class TransferLearningManager:
                 "weight_decay": weight_decay,
                 "name": "head",
             })
-            print(f"Head params: {len(head_params)}, lr={base_lr:.2e}")
+            logger.info(f"Head params: {len(head_params)}, lr={base_lr:.2e}")
 
         return param_groups
 
