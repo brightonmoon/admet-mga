@@ -6,12 +6,9 @@ task_registry 무결성 테스트.
 - get_model_paths()가 올바른 절대 경로를 반환하는지 확인
 """
 
-import sys
 from pathlib import Path
 
 import pytest
-
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from mga.inference.task_registry import (
     DISPLAY_NAMES,

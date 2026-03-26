@@ -7,12 +7,9 @@ ADMETPredictor 스모크 테스트.
     pytest tests/test_inference_smoke.py -v
 """
 
-import sys
 from pathlib import Path
 
 import pytest
-
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 CHECKPOINTS_DIR = Path(__file__).resolve().parents[1] / "checkpoints"
 
